@@ -6,28 +6,28 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "processed_file_word_occurrence")
-public class ProcessedFileWordOccurrence {
+@Table(name = "processed_log_word_occurrence")
+public class ProcessedLogWordOccurrence {
 
     @EmbeddedId
-    private ProcessedFileWordOccurrenceId id;
+    private ProcessedLogWordOccurrenceId id;
 
     @Column(name = "number_of_occurrences")
     private int numberOfOccurrences;
 
-    public ProcessedFileWordOccurrence() {
+    public ProcessedLogWordOccurrence() {
     }
 
-    public ProcessedFileWordOccurrence(ProcessedFileWordOccurrenceId id, int numberOfOccurrences) {
+    public ProcessedLogWordOccurrence(ProcessedLogWordOccurrenceId id, int numberOfOccurrences) {
         this.id = id;
         this.numberOfOccurrences = numberOfOccurrences;
     }
 
-    public ProcessedFileWordOccurrenceId getId() {
+    public ProcessedLogWordOccurrenceId getId() {
         return id;
     }
 
-    public void setId(ProcessedFileWordOccurrenceId id) {
+    public void setId(ProcessedLogWordOccurrenceId id) {
         this.id = id;
     }
 

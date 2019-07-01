@@ -6,22 +6,22 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "processed_file_country_call_statistics")
-public class ProcessedFileCountryCallStatistics {
+@Table(name = "processed_log_country_call_statistics")
+public class ProcessedLogCountryCallStatistics {
 
     @EmbeddedId
-    private ProcessedFileCountryCallStatisticsId id;
+    private ProcessedLogCountryCallStatisticsId id;
 
     @Column(name = "count_of_calls")
     private int numberOfCalls;
     @Column(name = "average_call_duration")
     private double averageCallDuration;
 
-    public ProcessedFileCountryCallStatistics() {
+    public ProcessedLogCountryCallStatistics() {
     }
 
-    public ProcessedFileCountryCallStatistics(
-            ProcessedFileCountryCallStatisticsId id,
+    public ProcessedLogCountryCallStatistics(
+            ProcessedLogCountryCallStatisticsId id,
             int numberOfCalls,
             double averageCallDuration
     ) {
@@ -30,11 +30,11 @@ public class ProcessedFileCountryCallStatistics {
         this.averageCallDuration = averageCallDuration;
     }
 
-    public ProcessedFileCountryCallStatisticsId getId() {
+    public ProcessedLogCountryCallStatisticsId getId() {
         return id;
     }
 
-    public void setId(ProcessedFileCountryCallStatisticsId id) {
+    public void setId(ProcessedLogCountryCallStatisticsId id) {
         this.id = id;
     }
 

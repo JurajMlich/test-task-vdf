@@ -2,7 +2,7 @@ package cz.artin.vodafone.logprocessorservice.service.log;
 
 import cz.artin.vodafone.logprocessorservice.model.*;
 import cz.artin.vodafone.logprocessorservice.repository.CountryRepository;
-import cz.artin.vodafone.logprocessorservice.repository.ProcessedFileRepository;
+import cz.artin.vodafone.logprocessorservice.repository.ProcessedLogRepository;
 import cz.artin.vodafone.logprocessorservice.service.log.analyzer.LogAnalyzer;
 import cz.artin.vodafone.logprocessorservice.service.log.analyzer.LogAnalyzerResult;
 import cz.artin.vodafone.logprocessorservice.service.log.downloader.LogDownloader;
@@ -25,35 +25,35 @@ public class LogService {
     private final LogDownloader logDownloader;
     private final LogParser logParser;
     private final LogAnalyzer logAnalyzer;
-    private final ProcessedFileRepository processedFileRepository;
+    private final ProcessedLogRepository processedLogRepository;
     private final CountryRepository countryRepository;
 
     public LogService(
             @Autowired LogDownloader logDownloader,
             @Autowired LogParser logParser,
             @Autowired LogAnalyzer logAnalyzer,
-            @Autowired ProcessedFileRepository processedFileRepository,
+            @Autowired ProcessedLogRepository processedLogRepository,
             @Autowired CountryRepository countryRepository
     ) {
         this.logDownloader = logDownloader;
         this.logParser = logParser;
         this.logAnalyzer = logAnalyzer;
-        this.processedFileRepository = processedFileRepository;
+        this.processedLogRepository = processedLogRepository;
         this.countryRepository = countryRepository;
     }
 
     //@Transactional TODO
-    public void process(LocalDate date) throws IOException {
-        var file = this.processedFileRepository.findById(date).orElse(null);
+    public void selectLog(LocalDate date) throws IOException {
+        var log = this.processedLogRepository.findById(date).orElse(null);
 
-        if (file != null && file.isActive()) {
+        if (log != null && log.isActive()) {
             return;
         }
 
-        this.processedFileRepository.findActive()
-                .ifPresent(processedFile -> processedFile.setActive(false));
+        this.processedLogRepository.findActive()
+                .ifPresent(otherLog -> otherLog.setActive(false));
 
-        if (file == null) {
+        if (log == null) {
             var start = System.currentTimeMillis();
 
             var rawData = this.logDownloader.downloadRawLogs(date);
@@ -62,42 +62,96 @@ public class LogService {
 
             var processDuration = System.currentTimeMillis() - start;
 
-            file = this.saveProcessedResult(
+            log = new ProcessedLog(
                     date,
-                    parsedData,
-                    analysis,
+                    rawData.length,
+                    parsedData.getNumberOfRowsWithMissingFields(),
+                    parsedData.getNumberOfRowsWithFieldErrors(),
+                    analysis.getNumberOfCalls(),
+                    analysis.getNumberOfOkCalls(),
+                    analysis.getNumberOfKoCalls(),
+                    analysis.getNumberOfMessages(),
+                    analysis.getNumberOfBlankMessages(),
                     processDuration,
-                    rawData.length
+                    LocalDateTime.now()
             );
+
+            processCountries(parsedData);
+            processCallStatistics(analysis, log);
+            processWordOccurrences(analysis, log);
         }
 
-        file.setActive(true);
+        log.setActive(true);
+        this.processedLogRepository.saveAndFlush(log);
     }
 
-    private ProcessedFile saveProcessedResult(
-            LocalDate date,
-            LogParserResult parsedData,
-            LogAnalyzerResult analysis,
-            long processDuration,
-            int numberOfRows
-    ) {
+    //    @Transactional(readOnly = true) TODO
+    public MetricsDto buildMetrics(LocalDate date) {
+        var log = this.processedLogRepository.findById(date)
+                .orElseThrow(IllegalStateException::new);
 
-        var file = new ProcessedFile(
-                date,
-                numberOfRows,
-                parsedData.getNumberOfRowsWithMissingFields(),
-                parsedData.getNumberOfRowsWithFieldErrors(),
-                analysis.getNumberOfCalls(),
-                analysis.getNumberOfOkCalls(),
-                analysis.getNumberOfKoCalls(),
-                analysis.getNumberOfMessages(),
-                analysis.getNumberOfBlankMessages(),
-                processDuration,
-                LocalDateTime.now()
+        var countryCallStatistics =
+                log.getCountryCallStatistics().stream().map(original -> new CountryCallStatisticsDto(
+                        original.getId().getCallFrom().getCallingCode(),
+                        original.getId().getCallTo().getCallingCode(),
+                        original.getNumberOfCalls(),
+                        original.getAverageCallDuration()
+                )).collect(Collectors.toSet());
+
+        var ratioOkCallsToKo =
+                log.getNumberOfOkCalls() / (double) log.getNumberOfKoCalls();
+
+        var wordOccurrences = log.getWordOccurrences()
+                .stream()
+                .collect(Collectors.toMap(
+                        o -> o.getId().getWord(),
+                        ProcessedLogWordOccurrence::getNumberOfOccurrences
+                ));
+
+        return new MetricsDto(
+                log.getNumberOfRowsWithMissingFields(),
+                log.getNumberOfMessagesWithBlankContent(),
+                log.getNumberOfRowsWithFieldErrors(),
+                countryCallStatistics,
+                ratioOkCallsToKo,
+                wordOccurrences
         );
+    }
 
-        file.setActive(true);
+    private void processWordOccurrences(LogAnalyzerResult analysis, ProcessedLog log) {
+        var wordOccurrences = analysis.getWordOccurrenceInMessages()
+                .entrySet()
+                .stream()
+                .map(entry -> new ProcessedLogWordOccurrence(
+                        new ProcessedLogWordOccurrenceId(
+                                entry.getKey(),
+                                log
+                        ),
+                        entry.getValue()
+                ))
+                .collect(Collectors.toSet());
 
+        log.setWordOccurrences(wordOccurrences);
+    }
+
+    private void processCallStatistics(LogAnalyzerResult analysis, ProcessedLog log) {
+        var stats = analysis.getCallStatsBetweenCountries().entrySet()
+                .stream()
+                .map(entry -> new ProcessedLogCountryCallStatistics(
+                        new ProcessedLogCountryCallStatisticsId(
+                                log,
+                                this.countryRepository.findByCallingCode(entry.getKey().getOriginCountryCallingCode()).orElseThrow(),
+                                this.countryRepository.findByCallingCode(entry.getKey().getDestinationCountryCallingCode()).orElseThrow()
+                        ),
+                        entry.getValue().getNumberOfCalls(),
+                        entry.getValue().getAverageDuration()
+                ))
+                .collect(Collectors.toSet());
+
+        log.setCountryCallStatistics(stats);
+    }
+
+    private void processCountries(LogParserResult parsedData) {
         parsedData.getItems()
                 .forEach(mcpLogLine -> {
                     var originCountryCallingCode =
@@ -120,72 +174,6 @@ public class LogService {
 
                     this.countryRepository.save(country);
                 });
-
-        var stats = analysis.getCallStatsBetweenCountries()
-                .entrySet()
-                .stream()
-                .map(entry -> new ProcessedFileCountryCallStatistics(
-                        new ProcessedFileCountryCallStatisticsId(
-                                file,
-                                this.countryRepository.findByCallingCode(entry.getKey().getOriginCountryCallingCode()).orElseThrow(),
-                                this.countryRepository.findByCallingCode(entry.getKey().getDestinationCountryCallingCode()).orElseThrow()
-                        ),
-                        entry.getValue().getNumberOfCalls(),
-                        entry.getValue().getAverageDuration()
-                ))
-                .collect(Collectors.toSet());
-
-        file.setCountryCallStatistics(stats);
-
-        var wordOccurrences = analysis.getWordOccurrenceInMessages()
-                .entrySet()
-                .stream()
-                .map(entry -> new ProcessedFileWordOccurrence(
-                        new ProcessedFileWordOccurrenceId(
-                                entry.getKey(),
-                                file
-                        ),
-                        entry.getValue()
-                ))
-                .collect(Collectors.toSet());
-
-        file.setWordOccurrences(wordOccurrences);
-
-        this.processedFileRepository.saveAndFlush(file);
-
-        return file;
     }
 
-    //    @Transactional(readOnly = true) TODO
-    public MetricsDto buildMetrics(LocalDate date) {
-        var file = this.processedFileRepository.findById(date)
-                .orElseThrow(IllegalStateException::new);
-
-        var countryCallStatistics =
-                file.getCountryCallStatistics().stream().map(original -> new CountryCallStatisticsDto(
-                        original.getId().getCallFrom().getCallingCode(),
-                        original.getId().getCallTo().getCallingCode(),
-                        original.getNumberOfCalls(),
-                        original.getAverageCallDuration()
-                )).collect(Collectors.toSet());
-
-        var ratioOkCallsToKo =
-                file.getNumberOfOkCalls() / (double) file.getNumberOfKoCalls();
-
-        var wordOccurrences = file.getWordOccurrences()
-                .stream()
-                .collect(Collectors.toMap(
-                        o -> o.getId().getWord(),
-                        ProcessedFileWordOccurrence::getNumberOfOccurrences
-                ));
-
-        return new MetricsDto(
-                file.getNumberOfRowsWithMissingFields(),
-                file.getNumberOfMessagesWithBlankContent(),
-                file.getNumberOfRowsWithFieldErrors(),
-                countryCallStatistics,
-                ratioOkCallsToKo,
-                wordOccurrences
-        );
-    }
 }

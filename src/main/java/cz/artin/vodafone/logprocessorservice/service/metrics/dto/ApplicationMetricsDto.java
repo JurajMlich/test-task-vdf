@@ -3,7 +3,7 @@ package cz.artin.vodafone.logprocessorservice.service.metrics.dto;
 import java.time.LocalDate;
 import java.util.Map;
 
-public class ServiceMetricsDto {
+public class ApplicationMetricsDto {
 
     private int numberOfProcessedJsonFiles;
     private int numberOfRows;
@@ -13,7 +13,7 @@ public class ServiceMetricsDto {
     private long numberOfDifferentDestinationCountryCodes;
     private Map<LocalDate, Long> durationOfEachJsonProcess;
 
-    public ServiceMetricsDto(int numberOfProcessedJsonFiles, int numberOfRows, int numberOfCalls, int numberOfMessages, long numberOfDifferentOriginCountryCodes, long numberOfDifferentDestinationCountryCodes, Map<LocalDate, Long> durationOfEachJsonProcess) {
+    public ApplicationMetricsDto(int numberOfProcessedJsonFiles, int numberOfRows, int numberOfCalls, int numberOfMessages, long numberOfDifferentOriginCountryCodes, long numberOfDifferentDestinationCountryCodes, Map<LocalDate, Long> durationOfEachJsonProcess) {
         this.numberOfProcessedJsonFiles = numberOfProcessedJsonFiles;
         this.numberOfRows = numberOfRows;
         this.numberOfCalls = numberOfCalls;

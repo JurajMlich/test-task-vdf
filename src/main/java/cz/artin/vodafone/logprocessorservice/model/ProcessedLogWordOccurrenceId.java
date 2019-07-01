@@ -8,21 +8,21 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class ProcessedFileWordOccurrenceId implements Serializable {
+public class ProcessedLogWordOccurrenceId implements Serializable {
 
     @Column(name = "word")
     private String word;
 
     @ManyToOne
-    @JoinColumn(name = "processed_file_id")
-    private ProcessedFile file;
+    @JoinColumn(name = "processed_log_id")
+    private ProcessedLog log;
 
-    public ProcessedFileWordOccurrenceId() {
+    public ProcessedLogWordOccurrenceId() {
     }
 
-    public ProcessedFileWordOccurrenceId(String word, ProcessedFile file) {
+    public ProcessedLogWordOccurrenceId(String word, ProcessedLog log) {
         this.word = word;
-        this.file = file;
+        this.log = log;
     }
 
     public String getWord() {
@@ -33,25 +33,25 @@ public class ProcessedFileWordOccurrenceId implements Serializable {
         this.word = word;
     }
 
-    public ProcessedFile getFile() {
-        return file;
+    public ProcessedLog getLog() {
+        return log;
     }
 
-    public void setFile(ProcessedFile file) {
-        this.file = file;
+    public void setLog(ProcessedLog log) {
+        this.log = log;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProcessedFileWordOccurrenceId that = (ProcessedFileWordOccurrenceId) o;
+        ProcessedLogWordOccurrenceId that = (ProcessedLogWordOccurrenceId) o;
         return Objects.equals(word, that.word) &&
-                Objects.equals(file, that.file);
+                Objects.equals(log, that.log);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(word, file);
+        return Objects.hash(word, log);
     }
 }

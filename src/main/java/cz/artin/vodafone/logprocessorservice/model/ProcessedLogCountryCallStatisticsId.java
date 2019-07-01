@@ -7,11 +7,11 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class ProcessedFileCountryCallStatisticsId implements Serializable {
+public class ProcessedLogCountryCallStatisticsId implements Serializable {
 
     @ManyToOne
-    @JoinColumn(name = "processed_file_id")
-    private ProcessedFile file;
+    @JoinColumn(name = "processed_log_id")
+    private ProcessedLog log;
 
     @ManyToOne
     @JoinColumn(name = "call_from_country_id")
@@ -21,25 +21,25 @@ public class ProcessedFileCountryCallStatisticsId implements Serializable {
     @JoinColumn(name = "call_to_country_id")
     private Country callTo;
 
-    public ProcessedFileCountryCallStatisticsId() {
+    public ProcessedLogCountryCallStatisticsId() {
     }
 
-    public ProcessedFileCountryCallStatisticsId(
-            ProcessedFile file,
+    public ProcessedLogCountryCallStatisticsId(
+            ProcessedLog log,
             Country callFrom,
             Country callTo
     ) {
-        this.file = file;
+        this.log = log;
         this.callFrom = callFrom;
         this.callTo = callTo;
     }
 
-    public ProcessedFile getFile() {
-        return file;
+    public ProcessedLog getLog() {
+        return log;
     }
 
-    public void setFile(ProcessedFile file) {
-        this.file = file;
+    public void setLog(ProcessedLog log) {
+        this.log = log;
     }
 
     public Country getCallFrom() {
@@ -62,14 +62,14 @@ public class ProcessedFileCountryCallStatisticsId implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProcessedFileCountryCallStatisticsId that = (ProcessedFileCountryCallStatisticsId) o;
-        return Objects.equals(file, that.file) &&
+        ProcessedLogCountryCallStatisticsId that = (ProcessedLogCountryCallStatisticsId) o;
+        return Objects.equals(log, that.log) &&
                 Objects.equals(callFrom, that.callFrom) &&
                 Objects.equals(callTo, that.callTo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(file, callFrom, callTo);
+        return Objects.hash(log, callFrom, callTo);
     }
 }

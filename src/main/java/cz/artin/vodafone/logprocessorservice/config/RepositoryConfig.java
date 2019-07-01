@@ -1,9 +1,9 @@
 package cz.artin.vodafone.logprocessorservice.config;
 
 import cz.artin.vodafone.logprocessorservice.repository.CountryRepository;
-import cz.artin.vodafone.logprocessorservice.repository.ProcessedFileRepository;
+import cz.artin.vodafone.logprocessorservice.repository.ProcessedLogRepository;
 import cz.artin.vodafone.logprocessorservice.repository.impl.CountryInMemoryRepository;
-import cz.artin.vodafone.logprocessorservice.repository.impl.ProcessedFileInMemoryRepository;
+import cz.artin.vodafone.logprocessorservice.repository.impl.ProcessedLogInMemoryRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,7 +22,7 @@ public class RepositoryConfig {
     }
 
     @Bean
-    public ProcessedFileRepository processedFileRepository() {
-        return new ProcessedFileInMemoryRepository();
+    public ProcessedLogRepository processedLogRepository() {
+        return new ProcessedLogInMemoryRepository();
     }
 }

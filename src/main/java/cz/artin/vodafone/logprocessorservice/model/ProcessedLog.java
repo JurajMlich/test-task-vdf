@@ -8,8 +8,8 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "processed_file")
-public class ProcessedFile {
+@Table(name = "processed_log")
+public class ProcessedLog {
 
     @Id
     @Column(name = "url")
@@ -41,15 +41,15 @@ public class ProcessedFile {
     @Column(name = "active")
     private boolean active;
 
-    @OneToMany(mappedBy = "id.file", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ProcessedFileCountryCallStatistics> countryCallStatistics = new HashSet<>();
-    @OneToMany(mappedBy = "id.file", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ProcessedFileWordOccurrence> wordOccurrences = new HashSet<>();
+    @OneToMany(mappedBy = "id.log", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProcessedLogCountryCallStatistics> countryCallStatistics = new HashSet<>();
+    @OneToMany(mappedBy = "id.log", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProcessedLogWordOccurrence> wordOccurrences = new HashSet<>();
 
-    public ProcessedFile() {
+    public ProcessedLog() {
     }
 
-    public ProcessedFile(
+    public ProcessedLog(
             LocalDate date,
             int numberOfRows,
             int numberOfRowsWithMissingFields,
@@ -164,19 +164,19 @@ public class ProcessedFile {
         this.processedAt = processedAt;
     }
 
-    public Set<ProcessedFileCountryCallStatistics> getCountryCallStatistics() {
+    public Set<ProcessedLogCountryCallStatistics> getCountryCallStatistics() {
         return countryCallStatistics;
     }
 
-    public void setCountryCallStatistics(Set<ProcessedFileCountryCallStatistics> countryCallStatistics) {
+    public void setCountryCallStatistics(Set<ProcessedLogCountryCallStatistics> countryCallStatistics) {
         this.countryCallStatistics = countryCallStatistics;
     }
 
-    public Set<ProcessedFileWordOccurrence> getWordOccurrences() {
+    public Set<ProcessedLogWordOccurrence> getWordOccurrences() {
         return wordOccurrences;
     }
 
-    public void setWordOccurrences(Set<ProcessedFileWordOccurrence> wordOccurrences) {
+    public void setWordOccurrences(Set<ProcessedLogWordOccurrence> wordOccurrences) {
         this.wordOccurrences = wordOccurrences;
     }
 
@@ -192,7 +192,7 @@ public class ProcessedFile {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProcessedFile that = (ProcessedFile) o;
+        ProcessedLog that = (ProcessedLog) o;
         return Objects.equals(date, that.date);
     }
 
