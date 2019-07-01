@@ -1,11 +1,12 @@
 package cz.artin.vodafone.logprocessorservice.service.log.parser;
 
 
-import cz.artin.vodafone.logprocessorservice.dto.McpLogLine;
+import cz.artin.vodafone.logprocessorservice.service.log.parser.dto.McpLogLine;
 
 import java.util.List;
 
 public class LogParserResult {
+
     private List<McpLogLine> items;
     private int numberOfRowsWithMissingFields;
     private int numberOfRowsWithFieldErrors;

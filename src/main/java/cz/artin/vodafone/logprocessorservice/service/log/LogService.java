@@ -6,6 +6,8 @@ import cz.artin.vodafone.logprocessorservice.repository.ProcessedFileRepository;
 import cz.artin.vodafone.logprocessorservice.service.log.analyzer.LogAnalyzer;
 import cz.artin.vodafone.logprocessorservice.service.log.analyzer.LogAnalyzerResult;
 import cz.artin.vodafone.logprocessorservice.service.log.downloader.LogDownloader;
+import cz.artin.vodafone.logprocessorservice.service.log.dto.CountryCallStatisticsDto;
+import cz.artin.vodafone.logprocessorservice.service.log.dto.MetricsDto;
 import cz.artin.vodafone.logprocessorservice.service.log.parser.LogParser;
 import cz.artin.vodafone.logprocessorservice.service.log.parser.LogParserResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +17,11 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
+// todo rename
 public class LogService {
+
     private final LogDownloader logDownloader;
     private final LogParser logParser;
     private final LogAnalyzer logAnalyzer;
@@ -39,13 +42,16 @@ public class LogService {
         this.countryRepository = countryRepository;
     }
 
+    //@Transactional TODO
     public void process(LocalDate date) throws IOException {
         var file = this.processedFileRepository.findById(date).orElse(null);
 
-        if (file != null) {
-            this.processedFileRepository.delete(file);
-            file = null;
+        if (file != null && file.isActive()) {
+            return;
         }
+
+        this.processedFileRepository.findActive()
+                .ifPresent(processedFile -> processedFile.setActive(false));
 
         if (file == null) {
             var start = System.currentTimeMillis();
@@ -65,8 +71,7 @@ public class LogService {
             );
         }
 
-        // todo: currently selected one
-        System.out.println();
+        file.setActive(true);
     }
 
     private ProcessedFile saveProcessedResult(
@@ -91,19 +96,30 @@ public class LogService {
                 LocalDateTime.now()
         );
 
+        file.setActive(true);
 
-        // save countries, streams used to filter out duplicates (database
-        // latency will be higher than CPU overhead of filtering out duplicates)
-        Stream.concat(
-                parsedData.getItems()
-                        .stream()
-                        .map(mcpLogLine -> mcpLogLine.getBetween().getOrigin()),
-                parsedData.getItems()
-                        .stream()
-                        .map(mcpLogLine -> mcpLogLine.getBetween().getDestination())
-        )
-                .distinct()
-                .forEach((countryRepository::save));
+        parsedData.getItems()
+                .forEach(mcpLogLine -> {
+                    var originCountryCallingCode =
+                            mcpLogLine.getBetween().getOriginCountryCallingCode();
+
+                    var country = this.countryRepository.findByCallingCode(originCountryCallingCode)
+                            .orElse(new Country(originCountryCallingCode));
+
+                    country.setOrigin(true);
+
+                    this.countryRepository.save(country);
+
+                    var destinationCountryCallingCode =
+                            mcpLogLine.getBetween().getDestinationCountryCallingCode();
+
+                    country = this.countryRepository.findByCallingCode(destinationCountryCallingCode)
+                            .orElse(new Country(destinationCountryCallingCode));
+
+                    country.setDestination(true);
+
+                    this.countryRepository.save(country);
+                });
 
         var stats = analysis.getCallStatsBetweenCountries()
                 .entrySet()
@@ -111,8 +127,8 @@ public class LogService {
                 .map(entry -> new ProcessedFileCountryCallStatistics(
                         new ProcessedFileCountryCallStatisticsId(
                                 file,
-                                entry.getKey().getOrigin(),
-                                entry.getKey().getDestination()
+                                this.countryRepository.findByCallingCode(entry.getKey().getOriginCountryCallingCode()).orElseThrow(),
+                                this.countryRepository.findByCallingCode(entry.getKey().getDestinationCountryCallingCode()).orElseThrow()
                         ),
                         entry.getValue().getNumberOfCalls(),
                         entry.getValue().getAverageDuration()
@@ -138,5 +154,38 @@ public class LogService {
         this.processedFileRepository.saveAndFlush(file);
 
         return file;
+    }
+
+    //    @Transactional(readOnly = true) TODO
+    public MetricsDto buildMetrics(LocalDate date) {
+        var file = this.processedFileRepository.findById(date)
+                .orElseThrow(IllegalStateException::new);
+
+        var countryCallStatistics =
+                file.getCountryCallStatistics().stream().map(original -> new CountryCallStatisticsDto(
+                        original.getId().getCallFrom().getCallingCode(),
+                        original.getId().getCallTo().getCallingCode(),
+                        original.getNumberOfCalls(),
+                        original.getAverageCallDuration()
+                )).collect(Collectors.toSet());
+
+        var ratioOkCallsToKo =
+                file.getNumberOfOkCalls() / (double) file.getNumberOfKoCalls();
+
+        var wordOccurrences = file.getWordOccurrences()
+                .stream()
+                .collect(Collectors.toMap(
+                        o -> o.getId().getWord(),
+                        ProcessedFileWordOccurrence::getNumberOfOccurrences
+                ));
+
+        return new MetricsDto(
+                file.getNumberOfRowsWithMissingFields(),
+                file.getNumberOfMessagesWithBlankContent(),
+                file.getNumberOfRowsWithFieldErrors(),
+                countryCallStatistics,
+                ratioOkCallsToKo,
+                wordOccurrences
+        );
     }
 }

@@ -1,10 +1,11 @@
-package cz.artin.vodafone.logprocessorservice.dto;
+package cz.artin.vodafone.logprocessorservice.service.log.parser.dto;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDateTime;
 
 public abstract class McpLogLine {
+
     @NotNull
     @PastOrPresent
     private LocalDateTime timestamp;

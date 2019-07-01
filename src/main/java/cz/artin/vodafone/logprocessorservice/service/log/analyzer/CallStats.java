@@ -1,6 +1,7 @@
 package cz.artin.vodafone.logprocessorservice.service.log.analyzer;
 
 public class CallStats {
+
     private int numberOfCalls;
     private double averageDuration;
 

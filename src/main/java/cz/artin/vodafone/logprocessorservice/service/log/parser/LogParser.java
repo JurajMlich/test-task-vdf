@@ -3,8 +3,8 @@ package cz.artin.vodafone.logprocessorservice.service.log.parser;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import cz.artin.vodafone.logprocessorservice.dto.McpLogLine;
 import cz.artin.vodafone.logprocessorservice.service.log.parser.deserializer.McpLogLineDeserializer;
+import cz.artin.vodafone.logprocessorservice.service.log.parser.dto.McpLogLine;
 import cz.artin.vodafone.logprocessorservice.service.log.parser.exception.MissingPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -18,6 +18,7 @@ import java.util.ArrayList;
 @Service
 @Scope("prototype")
 public class LogParser {
+
     private final Validator validator;
     private final ObjectMapper objectMapper;
 
@@ -28,7 +29,7 @@ public class LogParser {
         this.objectMapper = objectMapper;
         this.validator = validator;
 
-        SimpleModule module = new SimpleModule("custom-deserializers", Version.unknownVersion());
+        var module = new SimpleModule("log-deserializer", Version.unknownVersion());
         module.addDeserializer(McpLogLine.class, new McpLogLineDeserializer());
         this.objectMapper.registerModule(module);
     }
@@ -49,10 +50,8 @@ public class LogParser {
 
                 items.add(node);
             } catch (MissingPropertyException e) {
-                System.out.println(e.getMessage());
                 numberOfRowsWithMissingFields += 1;
             } catch (IOException | IllegalStateException | IllegalArgumentException e) {
-                System.out.println(e.getMessage());
                 numberOfRowsWithFieldErrors += 1;
             }
 

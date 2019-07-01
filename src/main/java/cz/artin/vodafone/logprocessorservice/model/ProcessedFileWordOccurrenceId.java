@@ -9,6 +9,7 @@ import java.util.Objects;
 
 @Embeddable
 public class ProcessedFileWordOccurrenceId implements Serializable {
+
     @Column(name = "word")
     private String word;
 

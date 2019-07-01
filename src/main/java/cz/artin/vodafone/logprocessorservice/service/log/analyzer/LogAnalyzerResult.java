@@ -1,10 +1,11 @@
 package cz.artin.vodafone.logprocessorservice.service.log.analyzer;
 
-import cz.artin.vodafone.logprocessorservice.dto.McpCommunicationBetweenCountries;
+import cz.artin.vodafone.logprocessorservice.service.log.parser.dto.McpCommunicationBetweenCountries;
 
 import java.util.Map;
 
 public class LogAnalyzerResult {
+
     private int numberOfCalls;
     private int numberOfMessages;
     private Map<McpCommunicationBetweenCountries, CallStats> callStatsBetweenCountries;

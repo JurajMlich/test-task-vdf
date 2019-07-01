@@ -1,18 +1,30 @@
 package cz.artin.vodafone.logprocessorservice.service.log.analyzer;
 
-import cz.artin.vodafone.logprocessorservice.dto.*;
+import cz.artin.vodafone.logprocessorservice.service.log.parser.dto.*;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
 @Scope("prototype")
 public class LogAnalyzer {
+
+    private static final String[] ANALYZE_WORDS = {"HELLO", "YOU", "FINE", "ARE", "NOT"};
+    private static final Map<String, Pattern> ANALYZE_WORD_PATTERNS = new HashMap<>();
+
+    static {
+        for (String analyzeWord : ANALYZE_WORDS) {
+            ANALYZE_WORD_PATTERNS.put(
+                    analyzeWord,
+                    Pattern.compile("\\b" + analyzeWord.toLowerCase() + "\\b")
+            );
+        }
+    }
+
     public LogAnalyzerResult analyze(List<McpLogLine> items) {
         var numberOfCalls = 0;
         var numberOfMessages = 0;
@@ -66,18 +78,17 @@ public class LogAnalyzer {
             Map<String, Integer> wordOccurrenceInMessages,
             McpLogLineMessage message
     ) {
-        String[] words = new String[]{"HELLO", "YOU", "FINE", "ARE", "NOT"};
-        String messageContent = message.getMessageContent().toLowerCase();
+        var messageContent = message.getMessageContent().toLowerCase();
 
-        for (String word : words) {
-            int i = 0;
-            Pattern p = Pattern.compile("\\b" + word.toLowerCase() + "\\b");
-            Matcher m = p.matcher(messageContent);
-            while (m.find()) {
-                i++;
+        for (String word : ANALYZE_WORDS) {
+            var matcher = ANALYZE_WORD_PATTERNS.get(word).matcher(messageContent);
+            var occurrences = 0;
+
+            while (matcher.find()) {
+                occurrences++;
             }
 
-            var newCount = wordOccurrenceInMessages.getOrDefault(word, 0) + i;
+            var newCount = wordOccurrenceInMessages.getOrDefault(word, 0) + occurrences;
 
             wordOccurrenceInMessages.put(word, newCount);
         }
@@ -91,8 +102,7 @@ public class LogAnalyzer {
                 call.getBetween(), new CallStats(0, 0)
         );
 
-        var total =
-                stats.getAverageDuration() * stats.getNumberOfCalls() + call.getDuration();
+        var total = stats.getAverageDuration() * stats.getNumberOfCalls() + call.getDuration();
         var newCount = stats.getNumberOfCalls() + 1;
 
         stats.setAverageDuration(total / newCount);

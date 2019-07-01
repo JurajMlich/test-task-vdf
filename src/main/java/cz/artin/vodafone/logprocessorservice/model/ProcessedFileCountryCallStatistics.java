@@ -8,6 +8,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "processed_file_country_call_statistics")
 public class ProcessedFileCountryCallStatistics {
+
     @EmbeddedId
     private ProcessedFileCountryCallStatisticsId id;
 

@@ -6,8 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import cz.artin.vodafone.logprocessorservice.dto.*;
-import cz.artin.vodafone.logprocessorservice.model.Country;
+import cz.artin.vodafone.logprocessorservice.service.log.parser.dto.*;
 import cz.artin.vodafone.logprocessorservice.service.log.parser.exception.FieldErrorException;
 import cz.artin.vodafone.logprocessorservice.service.log.parser.exception.MissingPropertyException;
 import cz.artin.vodafone.logprocessorservice.service.log.parser.exception.ParseException;
@@ -18,8 +17,13 @@ import java.time.LocalDateTime;
 import java.util.TimeZone;
 
 public class McpLogLineDeserializer extends StdDeserializer<McpLogLine> {
+
+    private final PhoneNumberUtil phoneNumberUtil;
+
     public McpLogLineDeserializer() {
         super(McpLogLine.class);
+
+        this.phoneNumberUtil = PhoneNumberUtil.getInstance();
     }
 
     @Override
@@ -97,15 +101,12 @@ public class McpLogLineDeserializer extends StdDeserializer<McpLogLine> {
         }
     }
 
-    private Country parseCountryFromMSISDN(String msisdn) throws NumberParseException {
+    private int parseCountryFromMSISDN(String msisdn) throws NumberParseException {
         if (!msisdn.startsWith("+")) {
             msisdn = "+" + msisdn;
         }
 
-        var countryCode =
-                PhoneNumberUtil.getInstance().parse(msisdn, "").getCountryCode();
-
-        return new Country(countryCode);
+        return this.phoneNumberUtil.parse(msisdn, "").getCountryCode();
     }
 
     private LocalDateTime dateTimeFromEpoch(long epoch) {

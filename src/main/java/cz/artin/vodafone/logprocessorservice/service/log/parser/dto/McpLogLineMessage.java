@@ -1,9 +1,10 @@
-package cz.artin.vodafone.logprocessorservice.dto;
+package cz.artin.vodafone.logprocessorservice.service.log.parser.dto;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public class McpLogLineMessage extends McpLogLine {
+
     @NotNull
     private McpMessageStatus status;
     @NotNull

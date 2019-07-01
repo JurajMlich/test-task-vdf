@@ -8,6 +8,7 @@ import java.util.Objects;
 
 @Embeddable
 public class ProcessedFileCountryCallStatisticsId implements Serializable {
+
     @ManyToOne
     @JoinColumn(name = "processed_file_id")
     private ProcessedFile file;

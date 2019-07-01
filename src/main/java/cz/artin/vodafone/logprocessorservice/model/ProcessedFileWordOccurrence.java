@@ -8,6 +8,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "processed_file_word_occurrence")
 public class ProcessedFileWordOccurrence {
+
     @EmbeddedId
     private ProcessedFileWordOccurrenceId id;
 
