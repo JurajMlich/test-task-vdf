@@ -3,6 +3,9 @@ package cz.artin.vodafone.logprocessorservice.service.log.parser.dto;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
+/**
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 public class McpCommunicationBetweenCountries {
 
     @NotNull

@@ -3,6 +3,9 @@ package cz.artin.vodafone.logprocessorservice.service.log.parser.dto;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
+/**
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 public class McpLogLineMessage extends McpLogLine {
 
     @NotNull

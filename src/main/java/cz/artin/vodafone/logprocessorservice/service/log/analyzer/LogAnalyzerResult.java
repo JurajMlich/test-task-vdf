@@ -4,6 +4,9 @@ import cz.artin.vodafone.logprocessorservice.service.log.parser.dto.McpCommunica
 
 import java.util.Map;
 
+/**
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 public class LogAnalyzerResult {
 
     private int numberOfCalls;

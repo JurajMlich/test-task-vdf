@@ -5,6 +5,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/**
+ * Storage for {@link Country}.
+ *
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 @Repository
 public interface CountryRepository {
 

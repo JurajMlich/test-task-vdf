@@ -3,7 +3,10 @@ package cz.artin.vodafone.logprocessorservice.service.log.dto;
 import java.util.Map;
 import java.util.Set;
 
-public class MetricsDto {
+/**
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
+public class LogMetricsDto {
 
     private int numberOfRowsWithMissingFields;
     private int numberOfMessagesWithBlankContent;
@@ -12,7 +15,7 @@ public class MetricsDto {
     private double ratioOkCallsToKo;
     private Map<String, Integer> wordOccurrences;
 
-    public MetricsDto(int numberOfRowsWithMissingFields, int numberOfMessagesWithBlankContent, int numberOfRowsWithFieldsErrors, Set<CountryCallStatisticsDto> callStatistics, double ratioOkCallsToKo, Map<String, Integer> wordOccurrences) {
+    public LogMetricsDto(int numberOfRowsWithMissingFields, int numberOfMessagesWithBlankContent, int numberOfRowsWithFieldsErrors, Set<CountryCallStatisticsDto> callStatistics, double ratioOkCallsToKo, Map<String, Integer> wordOccurrences) {
         this.numberOfRowsWithMissingFields = numberOfRowsWithMissingFields;
         this.numberOfMessagesWithBlankContent = numberOfMessagesWithBlankContent;
         this.numberOfRowsWithFieldsErrors = numberOfRowsWithFieldsErrors;

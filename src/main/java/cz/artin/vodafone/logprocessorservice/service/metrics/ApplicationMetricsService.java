@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
+/**
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 @Service
 public class ApplicationMetricsService {
 
@@ -31,7 +34,8 @@ public class ApplicationMetricsService {
                 this.processedLogRepository.sumOfMessages(),
                 this.countryRepository.countAllByOrigin(true),
                 this.countryRepository.countAllByDestination(true),
-                // nicetodo:
+                // nicetodo: delegate this task to database which will be
+                //  much more performant at this task
                 this.processedLogRepository.findAll().stream()
                         .collect(Collectors.toMap(ProcessedLog::getDate, ProcessedLog::getProcessDuration))
         );

@@ -7,6 +7,9 @@ import javax.persistence.ManyToOne;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 @Embeddable
 public class ProcessedLogWordOccurrenceId implements Serializable {
 

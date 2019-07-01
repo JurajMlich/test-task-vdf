@@ -3,6 +3,9 @@ package cz.artin.vodafone.logprocessorservice.service.metrics.dto;
 import java.time.LocalDate;
 import java.util.Map;
 
+/**
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 public class ApplicationMetricsDto {
 
     private int numberOfProcessedJsonFiles;

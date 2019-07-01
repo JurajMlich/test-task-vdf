@@ -7,12 +7,20 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Represents one processed log file for a specific day.
+ *
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 @Entity
 @Table(name = "processed_log")
 public class ProcessedLog {
 
+    /**
+     * Day for which the log file was downloaded and processed.
+     */
     @Id
-    @Column(name = "url")
+    @Column(name = "date")
     private LocalDate date;
 
     @Column(name = "number_of_rows")
@@ -32,17 +40,24 @@ public class ProcessedLog {
     @Column(name = "number_of_messages_with_blank_content")
     private int numberOfMessagesWithBlankContent;
 
+    /**
+     * Parsing + analysis duration in milliseconds.
+     */
     @Column(name = "process_duration")
     private long processDuration;
 
     @Column(name = "processed_at")
     private LocalDateTime processedAt;
 
+    /**
+     * Is this log currently selected to provide metrics for?
+     */
     @Column(name = "active")
     private boolean active;
 
     @OneToMany(mappedBy = "id.log", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProcessedLogCountryCallStatistics> countryCallStatistics = new HashSet<>();
+
     @OneToMany(mappedBy = "id.log", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ProcessedLogWordOccurrence> wordOccurrences = new HashSet<>();
 

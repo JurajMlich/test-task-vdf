@@ -2,6 +2,9 @@ package cz.artin.vodafone.logprocessorservice.service.log.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 public class CountryCallStatisticsDto {
 
     @JsonProperty("callFrom")

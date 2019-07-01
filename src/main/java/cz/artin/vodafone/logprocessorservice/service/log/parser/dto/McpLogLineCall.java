@@ -4,6 +4,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
+/**
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 public class McpLogLineCall extends McpLogLine {
 
     @Min(1)

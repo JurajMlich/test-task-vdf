@@ -5,6 +5,12 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+/**
+ * Represent statistics of all calls for one processed log from one origin to
+ * one destination.
+ *
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 @Entity
 @Table(name = "processed_log_country_call_statistics")
 public class ProcessedLogCountryCallStatistics {
@@ -14,6 +20,10 @@ public class ProcessedLogCountryCallStatistics {
 
     @Column(name = "count_of_calls")
     private int numberOfCalls;
+
+    /**
+     * Average call duration in seconds.
+     */
     @Column(name = "average_call_duration")
     private double averageCallDuration;
 

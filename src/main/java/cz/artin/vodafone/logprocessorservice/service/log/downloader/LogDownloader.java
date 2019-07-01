@@ -12,11 +12,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+/**
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 @Service
 @Scope("prototype")
 public class LogDownloader {
 
-    private static final String URL = "https://raw.githubusercontent" + ".com" + "/vas-test/test1/master/logs/MCP_$DATE.json";
+    private static final String URL = "https://raw.githubusercontent.com/vas-test/test1/master/logs/MCP_$DATE.json";
     private static final DateTimeFormatter DATE_FORMATTER;
 
     static {
@@ -24,7 +27,10 @@ public class LogDownloader {
     }
 
     public String[] downloadRawLogs(LocalDate date) throws IOException {
-        // todo chunking
+
+        // nicetodo: if the file may be too big that it would not fit into
+        //  memory, we'd need to download and parse the file in smaller chunks
+
         var url = URL.replace("$DATE", DATE_FORMATTER.format(date));
 
         var connection = (HttpURLConnection) new URL(url).openConnection();

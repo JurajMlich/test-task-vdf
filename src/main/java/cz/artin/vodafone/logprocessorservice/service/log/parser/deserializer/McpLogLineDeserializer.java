@@ -16,6 +16,13 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.TimeZone;
 
+/**
+ * Jackson deserializer for type {@link McpLogLine} that produces two types of
+ * objects {@link McpLogLineCall} or {@link McpLogLineMessage} depending on
+ * {@code message_type} value.
+ *
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 public class McpLogLineDeserializer extends StdDeserializer<McpLogLine> {
 
     private final PhoneNumberUtil phoneNumberUtil;

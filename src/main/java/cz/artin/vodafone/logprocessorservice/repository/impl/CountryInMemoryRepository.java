@@ -7,6 +7,12 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * In memory implementation of {@link CountryRepository}. For development
+ * purposes only. <b>Thread unsafe!</b>
+ *
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 public class CountryInMemoryRepository implements CountryRepository {
 
     private Set<Country> countries = new HashSet<>();

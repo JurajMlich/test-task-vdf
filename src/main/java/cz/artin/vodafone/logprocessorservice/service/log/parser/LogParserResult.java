@@ -5,6 +5,9 @@ import cz.artin.vodafone.logprocessorservice.service.log.parser.dto.McpLogLine;
 
 import java.util.List;
 
+/**
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 public class LogParserResult {
 
     private List<McpLogLine> items;

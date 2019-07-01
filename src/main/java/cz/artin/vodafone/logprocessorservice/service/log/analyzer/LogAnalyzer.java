@@ -9,11 +9,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ * Class analyzing special properties of a list of {@link McpLogLine}.
+ *
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 @Service
 @Scope("prototype")
 public class LogAnalyzer {
 
+    /**
+     * Analyse word occurrence of these words in messages.
+     */
     private static final String[] ANALYZE_WORDS = {"HELLO", "YOU", "FINE", "ARE", "NOT"};
+    /**
+     * @see #ANALYZE_WORD_PATTERNS
+     */
     private static final Map<String, Pattern> ANALYZE_WORD_PATTERNS = new HashMap<>();
 
     static {
@@ -36,7 +47,6 @@ public class LogAnalyzer {
                 new HashMap<McpCommunicationBetweenCountries, CallStats>();
         var wordOccurrenceInMessages =
                 new HashMap<String, Integer>();
-
 
         for (McpLogLine mcpLogLine : items) {
             if (mcpLogLine instanceof McpLogLineCall) {
@@ -102,6 +112,7 @@ public class LogAnalyzer {
                 call.getBetween(), new CallStats(0, 0)
         );
 
+        // calculate average
         var total = stats.getAverageDuration() * stats.getNumberOfCalls() + call.getDuration();
         var newCount = stats.getNumberOfCalls() + 1;
 

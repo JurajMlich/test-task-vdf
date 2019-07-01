@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.Optional;
 
+/**
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 @Repository
 public interface ProcessedLogJpaRepository extends JpaRepository<ProcessedLog, LocalDate>, ProcessedLogRepository {
 

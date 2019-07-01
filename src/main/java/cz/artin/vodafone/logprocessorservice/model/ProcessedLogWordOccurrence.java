@@ -5,6 +5,12 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+/**
+ * Represent information how many times a word was used in a message in a
+ * {@link ProcessedLog}.
+ *
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 @Entity
 @Table(name = "processed_log_word_occurrence")
 public class ProcessedLogWordOccurrence {

@@ -7,7 +7,7 @@ import cz.artin.vodafone.logprocessorservice.service.log.analyzer.LogAnalyzer;
 import cz.artin.vodafone.logprocessorservice.service.log.analyzer.LogAnalyzerResult;
 import cz.artin.vodafone.logprocessorservice.service.log.downloader.LogDownloader;
 import cz.artin.vodafone.logprocessorservice.service.log.dto.CountryCallStatisticsDto;
-import cz.artin.vodafone.logprocessorservice.service.log.dto.MetricsDto;
+import cz.artin.vodafone.logprocessorservice.service.log.dto.LogMetricsDto;
 import cz.artin.vodafone.logprocessorservice.service.log.parser.LogParser;
 import cz.artin.vodafone.logprocessorservice.service.log.parser.LogParserResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +86,7 @@ public class LogService {
     }
 
     //    @Transactional(readOnly = true) TODO
-    public MetricsDto buildMetrics(LocalDate date) {
+    public LogMetricsDto buildMetrics(LocalDate date) {
         var log = this.processedLogRepository.findById(date)
                 .orElseThrow(IllegalStateException::new);
 
@@ -108,7 +108,7 @@ public class LogService {
                         ProcessedLogWordOccurrence::getNumberOfOccurrences
                 ));
 
-        return new MetricsDto(
+        return new LogMetricsDto(
                 log.getNumberOfRowsWithMissingFields(),
                 log.getNumberOfMessagesWithBlankContent(),
                 log.getNumberOfRowsWithFieldErrors(),

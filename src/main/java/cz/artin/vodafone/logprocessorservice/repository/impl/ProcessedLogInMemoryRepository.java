@@ -6,6 +6,12 @@ import cz.artin.vodafone.logprocessorservice.repository.ProcessedLogRepository;
 import java.time.LocalDate;
 import java.util.*;
 
+/**
+ * In memory implementation of {@link ProcessedLogRepository}. For development
+ * purposes only. <b>Thread unsafe!</b>
+ *
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 public class ProcessedLogInMemoryRepository implements ProcessedLogRepository {
 
     private Set<ProcessedLog> entities = new HashSet<>();
@@ -59,10 +65,5 @@ public class ProcessedLogInMemoryRepository implements ProcessedLogRepository {
         return this.entities.stream()
                 .mapToInt(ProcessedLog::getNumberOfMessages)
                 .sum();
-    }
-
-    @Override
-    public void delete(ProcessedLog log) {
-        this.entities.remove(log);
     }
 }

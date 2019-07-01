@@ -15,6 +15,11 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 
+/**
+ * Parses and validates log.
+ *
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 @Service
 @Scope("prototype")
 public class LogParser {

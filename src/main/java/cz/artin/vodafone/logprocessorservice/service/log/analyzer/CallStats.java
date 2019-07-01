@@ -1,5 +1,8 @@
 package cz.artin.vodafone.logprocessorservice.service.log.analyzer;
 
+/**
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 public class CallStats {
 
     private int numberOfCalls;

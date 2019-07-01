@@ -5,10 +5,10 @@ create table country
             primary key
 );
 
-create table processed_file
+create table processed_log
 (
-    url                                   date      not null
-        constraint processed_file_pkey
+    date                                   date      not null
+        constraint processed_log_pkey
             primary key,
     processed_at                          timestamp not null,
     number_of_calls                       integer   not null,
@@ -22,11 +22,11 @@ create table processed_file
     process_duration                      bigint    not null
 );
 
-create table processed_file_country_call_statistics
+create table processed_log_country_call_statistics
 (
-    processed_file_id     date             not null
+    processed_log_id     date             not null
         constraint fkcyqp43xnaivxjeacmp1qplawb
-            references processed_file
+            references processed_log
             on update cascade
             on delete restrict,
     call_to_country_id    integer          not null
@@ -42,22 +42,22 @@ create table processed_file_country_call_statistics
 
     average_call_duration double precision not null,
     count_of_calls        integer          not null,
-    constraint processed_file_country_call_statistics_pkey
+    constraint processed_log_country_call_statistics_pkey
         primary key (call_from_country_id, call_to_country_id,
-                     processed_file_id)
+                     processed_log_id)
 );
 
-create table processed_file_word_occurrence
+create table processed_log_word_occurrence
 (
     word                  varchar(255) not null,
-    processed_file_id     date         not null
+    processed_log_id     date         not null
         constraint fko3k0gk8alvg6jogcqwqbf2jna
-            references processed_file
+            references processed_log
             on update cascade
             on delete restrict,
     number_of_occurrences integer      not null,
-    constraint processed_file_word_occurrence_pkey
-        primary key (processed_file_id, word)
+    constraint processed_log_word_occurrence_pkey
+        primary key (processed_log_id, word)
 );
 
 

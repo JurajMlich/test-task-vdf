@@ -7,6 +7,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Storage for {@link ProcessedLog}.
+ *
+ * @author Juraj Mlich <juraj.mlich@artin.cz>
+ */
 @Repository
 public interface ProcessedLogRepository {
 
@@ -25,6 +30,4 @@ public interface ProcessedLogRepository {
     Integer sumOfCalls();
 
     Integer sumOfMessages();
-
-    void delete(ProcessedLog log);
 }
