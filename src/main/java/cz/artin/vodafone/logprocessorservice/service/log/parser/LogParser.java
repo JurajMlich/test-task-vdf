@@ -34,6 +34,9 @@ public class LogParser {
         this.objectMapper = objectMapper;
         this.validator = validator;
 
+        // nicetodo: kept this way for the sake of simplicity, a better idea
+        //  would be to create special Config class that would initialize the
+        //  module
         var module = new SimpleModule("log-deserializer", Version.unknownVersion());
         module.addDeserializer(McpLogLine.class, new McpLogLineDeserializer());
         this.objectMapper.registerModule(module);

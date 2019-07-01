@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
  * @author Juraj Mlich <juraj.mlich@artin.cz>
  */
 @Repository
-public interface CountryJpaRepository extends JpaRepository<Country, Integer>, CountryRepository {
+interface CountryJpaRepository extends JpaRepository<Country, Integer>, CountryRepository {
 
 }

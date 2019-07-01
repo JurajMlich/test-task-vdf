@@ -22,6 +22,8 @@ public class ApplicationResource {
 
     @RequestMapping("kpis")
     public ApplicationMetricsDto buildServiceMetrics() {
+        // nicetodo: some kind of a caching mechanism so that there is no
+        //  need rebuild them every time
         return this.applicationMetricsService.buildMetrics();
     }
 

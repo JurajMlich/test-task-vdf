@@ -13,7 +13,7 @@ import java.util.Optional;
  * @author Juraj Mlich <juraj.mlich@artin.cz>
  */
 @Repository
-public interface ProcessedLogJpaRepository extends JpaRepository<ProcessedLog, LocalDate>, ProcessedLogRepository {
+interface ProcessedLogJpaRepository extends JpaRepository<ProcessedLog, LocalDate>, ProcessedLogRepository {
 
     @Query("FROM ProcessedLog log WHERE log.active = true")
     Optional<ProcessedLog> findActive();

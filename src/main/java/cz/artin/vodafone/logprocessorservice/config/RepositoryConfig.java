@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class RepositoryConfig {
+    // nicetodo: not use in memory mode altogether
 
     @Bean
     public CountryRepository countryRepository() {

@@ -108,6 +108,10 @@ public class McpLogLineDeserializer extends StdDeserializer<McpLogLine> {
         }
     }
 
+    // nicetodo: if the class was to grow any bigger, split it into several
+    //  deserializers and move this common util methods in a special utility
+    //  class
+
     private int parseCountryFromMSISDN(String msisdn) throws NumberParseException {
         if (!msisdn.startsWith("+")) {
             msisdn = "+" + msisdn;
