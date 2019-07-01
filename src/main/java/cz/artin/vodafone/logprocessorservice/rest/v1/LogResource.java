@@ -21,7 +21,7 @@ import java.time.format.DateTimeParseException;
  * @author Juraj Mlich <juraj.mlich@artin.cz>
  */
 @RestController
-@RequestMapping("logs")
+@RequestMapping
 public class LogResource {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -42,7 +42,7 @@ public class LogResource {
      *
      * @return metrics
      */
-    @RequestMapping("active/metrics")
+    @RequestMapping({"logs/active/metrics", "metrics"})
     public LogMetricsDto getMetrics() {
         var activeLog = this.processedLogRepository.findActive()
                 .orElseThrow(IllegalStateException::new);
@@ -58,7 +58,7 @@ public class LogResource {
      * @param data date in format yyyyMMdd
      * @return status
      */
-    @RequestMapping(path = "active", method = RequestMethod.PUT)
+    @RequestMapping(path = "logs/active", method = RequestMethod.PUT)
     public ResponseEntity<StatusDto> selectLog(
             @Valid @NotNull @RequestBody String data
     ) {
@@ -86,8 +86,8 @@ public class LogResource {
 
 
     // TODO remove, only for development purposes
-    @RequestMapping(path = "active", method = RequestMethod.GET)
-    public ResponseEntity<StatusDto> selectLog2(
+    @RequestMapping(path = "logs/active", method = RequestMethod.GET)
+    public ResponseEntity<StatusDto> selectLogAlias(
             @Valid @NotNull @RequestParam(name = "date") String data
     ) {
         return selectLog(data);
