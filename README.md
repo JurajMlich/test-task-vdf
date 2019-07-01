@@ -19,7 +19,7 @@
 
 **Java version:** 12<br>
 **Framework used:** Spring with Spring Boot for configuration<br>
-**Documentation:** Every more complex unit well commented. In addition, plenty of // nicetodo: comments suggesting potential areas of improvement in future
+**Documentation:** Every more complex unit well commented. In addition, plenty of // nicetodo: comments suggesting potential areas of improvement in future<br>
 **Database:**
 - in memory implementation for demonstration purposes (thread unsafe)
 - any JPA supported database (allowing potential horizontal scalling of the microservice and extensibility as databases are much more suited for analytical jobs)
