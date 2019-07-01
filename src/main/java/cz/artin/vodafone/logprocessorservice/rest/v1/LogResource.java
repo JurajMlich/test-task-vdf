@@ -3,6 +3,7 @@ package cz.artin.vodafone.logprocessorservice.rest.v1;
 import cz.artin.vodafone.logprocessorservice.model.ProcessedLog;
 import cz.artin.vodafone.logprocessorservice.repository.ProcessedLogRepository;
 import cz.artin.vodafone.logprocessorservice.rest.v1.dto.StatusDto;
+import cz.artin.vodafone.logprocessorservice.rest.v1.exception.BadRequestException;
 import cz.artin.vodafone.logprocessorservice.service.log.LogService;
 import cz.artin.vodafone.logprocessorservice.service.log.dto.LogMetricsDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,11 @@ public class LogResource {
     @RequestMapping({"logs/active/metrics", "metrics"})
     public LogMetricsDto getMetrics() {
         var activeLog = this.processedLogRepository.findActive()
-                .orElseThrow(IllegalStateException::new);
+                .orElse(null);
+
+        if (activeLog == null) {
+            throw new BadRequestException("No log is active. Select one first.");
+        }
 
         // nicetodo: some kind of a caching mechanism so that there is no
         //  need rebuild them every time

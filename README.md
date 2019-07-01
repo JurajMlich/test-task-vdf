@@ -19,6 +19,7 @@
 
 **Java version:** 12<br>
 **Framework used:** Spring with Spring Boot for configuration<br>
+**Documentation:** Every more complex unit well commented. In addition, plenty of // nicetodo: comments suggesting potential areas of improvement in future
 **Database:**
 - in memory implementation for demonstration purposes (thread unsafe)
 - any JPA supported database (allowing potential horizontal scalling of the microservice and extensibility as databases are much more suited for analytical jobs)
@@ -47,7 +48,7 @@ exposes two REST resources `ApplicationResource` and `LogResource` both located 
 the presentation tier in my N-Tier architecture system. The presentation tier communicates with the service layer located in package `cz.artin.vodafone.logprocessorservice.service`
 which contains all the business logic specific to the application. All data storage storage functionality is stored in the data tier located in Repository classes in 
 `cz.artin.vodafone.logprocessorservice.repository`. The N-Tier architecture rules are not stricly followed everywhere due to small size of the application and
-the demonstrational nature of the program.
+the demonstrational nature of the program. 
 
 The download, parsing and analysis of the log files are carried in the ` cz.artin.vodafone.logprocessorservice.service.log` package. After successful completion, the
 results are saved into the data layer to allow easier manipulation of the data, allow horizontal scalling of the service and allow system to be easily extensible
