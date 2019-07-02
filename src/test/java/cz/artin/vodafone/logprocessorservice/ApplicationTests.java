@@ -14,3 +14,5 @@ public class ApplicationTests {
     }
 
 }
+
+// nicetodo: integration tests testing REST API and overall system functionality

@@ -1,77 +1,91 @@
 package cz.artin.vodafone.logprocessorservice.service.log.parser.deserializer;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.BaseJsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import cz.artin.vodafone.logprocessorservice.service.log.parser.dto.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = {ObjectMapper.class})
 class McpLogLineDeserializerTest {
 
-    @Mock
-    JsonNode node;
-    @Mock
-    JsonNode node2;
-
-    @Mock
-    JsonParser jsonParser;
-    @Mock
-    ObjectCodec objectCodec;
-    @Mock
-    DeserializationContext deserializationContext;
-
-    McpLogLineDeserializer deserializer;
+    @Autowired
+    ObjectMapper objectMapper;
 
     @BeforeEach
-    void createMocks() throws IOException {
-        MockitoAnnotations.initMocks(this);
-
-        this.deserializer = new McpLogLineDeserializer();
-
-        when(jsonParser.getCodec()).thenReturn(objectCodec);
-        when(objectCodec.readTree(jsonParser)).thenReturn(node);
+    void prepare() {
+        var module = new SimpleModule("log-deserializer", Version.unknownVersion());
+        module.addDeserializer(McpLogLine.class, new McpLogLineDeserializer());
+        this.objectMapper.registerModule(module);
     }
 
     @Test
-    void deserialize() throws IOException {
-        var timestampNode = mock(JsonNode.class);
-        var durationNode = mock(JsonNode.class);
-        var statusDescriptionNode = mock(JsonNode.class);
-        var statusCodeNode = mock(JsonNode.class);
+    void deserializeCall() throws IOException {
 
-        when(node.get("message_type")).thenReturn(node2);
-        when(node.get("status_code")).thenReturn(statusCodeNode);
-        when(node.get("timestamp")).thenReturn(timestampNode);
-        when(node.get("duration")).thenReturn(durationNode);
-        when(node.get("status_description")).thenReturn(statusDescriptionNode);
-        when(node.has(any())).thenReturn(true);
-        when(node2.textValue()).thenReturn("CALL");
+        var date = LocalDateTime.now().withNano(0);
 
-        when(statusCodeNode.textValue()).thenReturn("OK");
-        doReturn(true).when(timestampNode).isNumber();
-        when(durationNode.isNumber()).thenReturn(true);
-        LocalDateTime now = LocalDateTime.now();
-        when(timestampNode.longValue()).thenReturn(Timestamp.valueOf(now).getTime());
+        String content =
+                "{\"message_type\": \"CALL\",\"timestamp\": " +
+                        Math.floor(Timestamp.valueOf(date).getTime() / 1000) + "," +
+                        "\"origin\": 34969000001,\"destination\": " +
+                        "34969000101,\"duration\": 120,\"status_code\": " +
+                        "\"OK\",\"status_description\": \"OK\"}";
 
-        deserializer.deserialize(jsonParser,deserializationContext);
+        var obj = this.objectMapper.readValue(content, McpLogLine.class);
 
+        assertEquals(date, obj.getTimestamp());
+        assertEquals(34, obj.getBetween().getOriginCountryCallingCode().intValue());
+        assertEquals(34, obj.getBetween().getDestinationCountryCallingCode().intValue());
 
+        assertTrue(obj instanceof McpLogLineCall);
+
+        var call = (McpLogLineCall) obj;
+
+        assertEquals(120, call.getDuration());
+        assertEquals(McpCallStatusCode.OK, call.getStatus());
+        assertEquals("OK", call.getStatusDescription());
     }
+
+    @Test
+    void deserializeMessage() throws IOException {
+
+        var date = LocalDateTime.now().withNano(0);
+
+        String content =
+                "{\"message_type\": \"MSG\",\"timestamp\": " +
+                        Math.floor(Timestamp.valueOf(date).getTime() / 1000) + "," +
+                        "\"origin\": 447005963437,\"destination\": " +
+                        "447005963734,\"message_content\": \"LUNCH\",  " +
+                        "\"message_status\": \"SEEN\"}";
+
+        var obj = this.objectMapper.readValue(content, McpLogLine.class);
+
+        assertEquals(date, obj.getTimestamp());
+        assertEquals(44,
+                obj.getBetween().getOriginCountryCallingCode().intValue());
+        assertEquals(44,
+                obj.getBetween().getDestinationCountryCallingCode().intValue());
+
+        assertTrue(obj instanceof McpLogLineMessage);
+
+        var message = (McpLogLineMessage) obj;
+
+        assertEquals("LUNCH", message.getMessageContent());
+        assertEquals(McpMessageStatus.SEEN, message.getStatus());
+    }
+
+    // nicetodo: tests for validation / errors
 }

@@ -25,6 +25,16 @@ import java.util.TimeZone;
  */
 public class McpLogLineDeserializer extends StdDeserializer<McpLogLine> {
 
+    static final String FIELD_MESSAGE_TYPE = "message_type";
+    static final String FIELD_TIMESTAMP = "timestamp";
+    static final String FIELD_ORIGIN = "origin";
+    static final String FIELD_DESTINATION = "destination";
+    static final String FIELD_MESSAGE_STATUS = "message_status";
+    static final String FIELD_MESSAGE_CONTENT = "message_content";
+    static final String FIELD_DURATION = "duration";
+    static final String FIELD_STATUS_CODE = "status_code";
+    static final String FIELD_STATUS_DESCRIPTION = "status_description";
+
     private final PhoneNumberUtil phoneNumberUtil;
 
     public McpLogLineDeserializer() {
@@ -37,9 +47,9 @@ public class McpLogLineDeserializer extends StdDeserializer<McpLogLine> {
     public McpLogLine deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         JsonNode node = parser.getCodec().readTree(parser);
 
-        ensureFieldsExist(node, "message_type", "timestamp", "origin", "destination");
+        ensureFieldsExist(node, FIELD_MESSAGE_TYPE, FIELD_TIMESTAMP, FIELD_ORIGIN, FIELD_DESTINATION);
 
-        var type = node.get("message_type").textValue();
+        var type = node.get(FIELD_MESSAGE_TYPE).textValue();
 
         if ("CALL".equals(type)) {
             return parseCall(node);
@@ -51,20 +61,21 @@ public class McpLogLineDeserializer extends StdDeserializer<McpLogLine> {
     }
 
     private McpLogLineMessage parseMsg(JsonNode node) throws MissingPropertyException, FieldErrorException {
-        ensureFieldsExist(node, "message_status", "message_content");
+        ensureFieldsExist(node, FIELD_MESSAGE_STATUS, FIELD_MESSAGE_CONTENT);
 
         try {
-            var status = McpMessageStatus.valueOf(node.get("message_status").textValue());
+            var status = McpMessageStatus.valueOf(node.get(FIELD_MESSAGE_STATUS).textValue());
 
-            if (!node.get("timestamp").isNumber()) {
-                throw new IllegalStateException("Timestamp is in incorrect format.");
+            if (!node.get(FIELD_TIMESTAMP).isNumber()) {
+                throw new FieldErrorException("Field " + FIELD_TIMESTAMP + " is in " +
+                        "incorrect format.");
             }
 
             return new McpLogLineMessage(
-                    dateTimeFromEpoch(node.get("timestamp").longValue()),
+                    dateTimeFromEpoch(node.get(FIELD_TIMESTAMP).longValue()),
                     parseBetween(node),
                     status,
-                    node.get("message_content").textValue()
+                    node.get(FIELD_MESSAGE_CONTENT).textValue()
             );
         } catch (IllegalArgumentException e) {
             throw new FieldErrorException(e.getMessage());
@@ -72,23 +83,25 @@ public class McpLogLineDeserializer extends StdDeserializer<McpLogLine> {
     }
 
     private McpLogLineCall parseCall(JsonNode node) throws MissingPropertyException, FieldErrorException {
-        ensureFieldsExist(node, "duration", "status_code", "status_description");
+        ensureFieldsExist(node, FIELD_DURATION, FIELD_STATUS_CODE, FIELD_STATUS_DESCRIPTION);
 
-        var status = McpCallStatusCode.valueOf(node.get("status_code").textValue());
+        var status = McpCallStatusCode.valueOf(node.get(FIELD_STATUS_CODE).textValue());
 
         try {
-            if (!node.get("timestamp").isNumber()) {
-                throw new FieldErrorException("Timestamp is in incorrect format.");
-            } else if (!node.get("duration").isNumber()) {
-                throw new FieldErrorException("Duration is in incorrect format.");
+            if (!node.get(FIELD_TIMESTAMP).isNumber()) {
+                throw new FieldErrorException("Field " + FIELD_TIMESTAMP + " is in " +
+                        "incorrect format.");
+            } else if (!node.get(FIELD_DURATION).isNumber()) {
+                throw new FieldErrorException("Field " + FIELD_DURATION + " is in " +
+                        "incorrect format.");
             }
 
             return new McpLogLineCall(
-                    dateTimeFromEpoch(node.get("timestamp").longValue()),
+                    dateTimeFromEpoch(node.get(FIELD_TIMESTAMP).longValue()),
                     parseBetween(node),
-                    node.get("duration").intValue(),
+                    node.get(FIELD_DURATION).intValue(),
                     status,
-                    node.get("status_description").textValue()
+                    node.get(FIELD_STATUS_DESCRIPTION).textValue()
             );
         } catch (IllegalArgumentException e) {
             throw new FieldErrorException(e.getMessage());
@@ -96,15 +109,15 @@ public class McpLogLineDeserializer extends StdDeserializer<McpLogLine> {
     }
 
     private McpCommunicationBetweenCountries parseBetween(JsonNode node) throws FieldErrorException {
-        ensureFieldsAreNumber(node, "origin", "destination");
+        ensureFieldsAreNumber(node, FIELD_ORIGIN, FIELD_DESTINATION);
 
         try {
             return new McpCommunicationBetweenCountries(
-                    parseCountryFromMSISDN(String.valueOf(node.get("origin").intValue())),
-                    parseCountryFromMSISDN(String.valueOf(node.get("destination").intValue()))
+                    parseCountryFromMSISDN(String.valueOf(node.get(FIELD_ORIGIN).longValue())),
+                    parseCountryFromMSISDN(String.valueOf(node.get(FIELD_DESTINATION).longValue()))
             );
         } catch (NumberParseException e) {
-            throw new FieldErrorException("Phone number in incorrect format");
+            throw new FieldErrorException("MSISDN in incorrect format");
         }
     }
 
