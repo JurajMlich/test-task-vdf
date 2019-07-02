@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * Parses and validates log.
@@ -51,7 +53,8 @@ public class LogParser {
             try {
                 var node = parseLine(line);
 
-                if (validator.validate(node).size() > 0) {
+                Set<ConstraintViolation<McpLogLine>> validate = validator.validate(node);
+                if (validate.size() > 0) {
                     numberOfRowsWithFieldErrors += 1;
                     continue;
                 }

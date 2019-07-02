@@ -21,11 +21,11 @@ public class LogAnalyzer {
     /**
      * Analyse word occurrence of these words in messages.
      */
-    private static final String[] ANALYZE_WORDS = {"HELLO", "YOU", "FINE", "ARE", "NOT"};
+    static final String[] ANALYZE_WORDS = {"HELLO", "YOU", "FINE", "ARE", "NOT"};
     /**
      * @see #ANALYZE_WORD_PATTERNS
      */
-    private static final Map<String, Pattern> ANALYZE_WORD_PATTERNS = new HashMap<>();
+    static final Map<String, Pattern> ANALYZE_WORD_PATTERNS = new HashMap<>();
 
     static {
         for (String analyzeWord : ANALYZE_WORDS) {
