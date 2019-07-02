@@ -53,7 +53,7 @@ public class LogParser {
             try {
                 var node = parseLine(line);
 
-                Set<ConstraintViolation<McpLogLine>> validate = validator.validate(node);
+                var validate = validator.validate(node);
                 if (validate.size() > 0) {
                     numberOfRowsWithFieldErrors += 1;
                     continue;

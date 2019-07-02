@@ -168,6 +168,7 @@ public class LogService {
         var stats = analysis.getCallStatsBetweenCountries().entrySet()
                 .stream()
                 .map(entry -> new ProcessedLogCountryCallStatistics(
+                        // nicetodo: area for performance improvement
                         new ProcessedLogCountryCallStatisticsId(
                                 log,
                                 this.countryRepository.findByCallingCode(entry.getKey().getOriginCountryCallingCode()).orElseThrow(),
@@ -184,6 +185,7 @@ public class LogService {
     private void processCountries(LogParserResult parsedData) {
         parsedData.getItems()
                 .forEach(mcpLogLine -> {
+                    // nicetodo: area for performance improvement
                     var originCountryCallingCode =
                             mcpLogLine.getBetween().getOriginCountryCallingCode();
 

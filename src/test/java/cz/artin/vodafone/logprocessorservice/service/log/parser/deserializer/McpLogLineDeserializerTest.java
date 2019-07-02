@@ -39,7 +39,7 @@ class McpLogLineDeserializerTest {
 
         String content =
                 "{\"message_type\": \"CALL\",\"timestamp\": " +
-                        Math.floor(Timestamp.valueOf(date).getTime() / 1000) + "," +
+                        Math.floor(Timestamp.valueOf(date).getTime() / 1000d) + "," +
                         "\"origin\": 34969000001,\"destination\": " +
                         "34969000101,\"duration\": 120,\"status_code\": " +
                         "\"OK\",\"status_description\": \"OK\"}";
@@ -66,7 +66,7 @@ class McpLogLineDeserializerTest {
 
         String content =
                 "{\"message_type\": \"MSG\",\"timestamp\": " +
-                        Math.floor(Timestamp.valueOf(date).getTime() / 1000) + "," +
+                        Math.floor(Timestamp.valueOf(date).getTime() / 1000d) + "," +
                         "\"origin\": 447005963437,\"destination\": " +
                         "447005963734,\"message_content\": \"LUNCH\",  " +
                         "\"message_status\": \"SEEN\"}";
