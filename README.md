@@ -13,7 +13,11 @@
 
 1. Ensure you have working installation of `Maven` and `Java 12 JDK`
 2. Run `mvn clean package` command to build JAR file of the application.
-3. Run `java -jar target/messageprocessorservice-1.0.0-SNAPSHOT.jar` command to run the server.
+3. Run `java -jar target/messageprocessorservice-1.0.0-SNAPSHOT.jar` command to run the server. In case you are using the in memory storage (default), ignore the error message about database inability.
+4. The server should be running at port 8080. Test it out using following REST calls:
+- http://localhost:8080/logs/active?date=20180131 - download, parse and analyze log file for 20180131 (note: this endpoint is only for demonstrational purposes)
+- http://localhost:8080/logs/active/metrics or http://localhost:8080/metrics - show analytics for the lastly selected log file
+- http://localhost:8080/kpis - show service analytics
 
 ### Details about the implementation
 
@@ -21,7 +25,7 @@
 **Framework used:** Spring with Spring Boot for configuration<br>
 **Documentation:** Every more complex unit well commented. In addition, plenty of // nicetodo: comments suggesting potential areas of improvement in future<br>
 **Database:**
-- in memory implementation for demonstration purposes (thread unsafe)
+- in memory implementation for demonstration purposes (thread unsafe), if used, ignore the ERROR log message about inability to connect to the database, the application should work properly
 - any JPA supported database (allowing potential horizontal scalling of the microservice and extensibility as databases are much more suited for analytical jobs)
 
 **REST endpoints provided:**
