@@ -13,7 +13,7 @@
 
 1. Ensure you have working installation of `Maven` and `Java 12 JDK`
 2. Run `mvn clean package` command to build JAR file of the application.
-3. Run `java -jar target/messageprocessorservice-1.0.0-SNAPSHOT.jar` command to run the server.
+3. Run `java -jar target/messageprocessorservice-1.0.0-SNAPSHOT.jar` command to run the server. In case you are using the in memory storage (default), ignore the error message about database inability.
 
 ### Details about the implementation
 
