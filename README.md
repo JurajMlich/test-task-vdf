@@ -21,7 +21,7 @@
 **Framework used:** Spring with Spring Boot for configuration<br>
 **Documentation:** Every more complex unit well commented. In addition, plenty of // nicetodo: comments suggesting potential areas of improvement in future<br>
 **Database:**
-- in memory implementation for demonstration purposes (thread unsafe)
+- in memory implementation for demonstration purposes (thread unsafe), if used, ignore the ERROR log message about inability to connect to the database, the application should work properly
 - any JPA supported database (allowing potential horizontal scalling of the microservice and extensibility as databases are much more suited for analytical jobs)
 
 **REST endpoints provided:**
