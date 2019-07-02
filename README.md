@@ -14,6 +14,10 @@
 1. Ensure you have working installation of `Maven` and `Java 12 JDK`
 2. Run `mvn clean package` command to build JAR file of the application.
 3. Run `java -jar target/messageprocessorservice-1.0.0-SNAPSHOT.jar` command to run the server. In case you are using the in memory storage (default), ignore the error message about database inability.
+4. The server should be running at port 8080. Test it out using following REST calls:
+- http://localhost:8080/logs/active?date=20180131 - download, parse and analyze log file for 20180131 (note: this endpoint is only for demonstrational purposes)
+- http://localhost:8080/logs/active/metrics or http://localhost:8080/metrics - show analytics for the lastly selected log file
+- http://localhost:8080/kpis - show service analytics
 
 ### Details about the implementation
 
